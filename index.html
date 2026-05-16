@@ -12,56 +12,31 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif; background: #fafaf8; color: #1a1a1a; overscroll-behavior: none; }
 :root {
-  --accent: #1a1a1a;
-  --accent2: #555;
-  --muted: #888;
-  --border: rgba(0,0,0,0.1);
-  --border2: rgba(0,0,0,0.18);
-  --surface: #fff;
-  --bg: #fafaf8;
-  --hour-h: 60px;
+  --accent: #1a1a1a; --accent2: #555; --muted: #888;
+  --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+  --surface: #fff; --bg: #fafaf8; --hour-h: 60px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 @media (prefers-color-scheme: dark) {
-  :root {
-    --accent: #f0f0ee;
-    --accent2: #aaa;
-    --muted: #666;
-    --border: rgba(255,255,255,0.1);
-    --border2: rgba(255,255,255,0.2);
-    --surface: #1c1c1e;
-    --bg: #111110;
-  }
+  :root { --accent: #f0f0ee; --accent2: #aaa; --muted: #666; --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2); --surface: #1c1c1e; --bg: #111110; }
   body { background: var(--bg); color: var(--accent); }
 }
-
-/* Layout */
 .app { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
-
-/* Header */
 .header { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 12px 16px 10px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; padding-top: calc(12px + env(safe-area-inset-top, 0px)); }
 .header-left h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.5px; }
 .header-left .date-str { font-size: 12px; color: var(--muted); margin-top: 1px; }
-.header-right { display: flex; align-items: center; gap: 8px; }
-.hdr-btn { font-size: 13px; padding: 5px 12px; border: 0.5px solid var(--border2); border-radius: 20px; background: none; color: var(--accent); cursor: pointer; }
-.hdr-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 .date-nav { display: flex; align-items: center; gap: 4px; }
 .nav-arrow { width: 28px; height: 28px; border: 0.5px solid var(--border); border-radius: 50%; background: none; color: var(--accent2); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-
-/* Tabs */
-.tabs { display: flex; background: var(--surface); border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
-.tab { flex: 1; padding: 10px 0; font-size: 13px; text-align: center; color: var(--muted); border: none; background: none; cursor: pointer; position: relative; }
-.tab.active { color: var(--accent); font-weight: 500; }
-.tab.active::after { content: ''; position: absolute; bottom: 0; left: 20%; right: 20%; height: 2px; background: var(--accent); border-radius: 1px; }
-
-/* Content area */
+.hdr-btn { font-size: 13px; padding: 5px 12px; border: 0.5px solid var(--border2); border-radius: 20px; background: none; color: var(--accent); cursor: pointer; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; display: inline-block; margin-left: 6px; vertical-align: middle; }
+.sync-dot.ok { background: #4CAF50; }
+.sync-dot.err { background: #e24b4a; }
+.sync-dot.loading { background: #FAC775; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 .view { flex: 1; overflow: hidden; display: none; flex-direction: column; }
 .view.active { display: flex; }
-
-/* ── TIMELINE VIEW ── */
 .tl-wrap { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; position: relative; }
 .tl-grid { display: grid; grid-template-columns: 44px 1fr; }
-.tl-labels {}
 .tl-label { height: var(--hour-h); display: flex; align-items: flex-start; justify-content: flex-end; padding-right: 8px; padding-top: 3px; font-size: 11px; color: var(--muted); }
 .tl-label:first-child { visibility: hidden; }
 .tl-slots { position: relative; }
@@ -74,13 +49,9 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
 .now-line { position: absolute; left: 0; right: 0; pointer-events: none; z-index: 5; }
 .now-line::before { content: ''; position: absolute; left: 0; right: 0; height: 1.5px; background: #e24b4a; top: -0.75px; }
 .now-dot { width: 8px; height: 8px; border-radius: 50%; background: #e24b4a; position: absolute; left: -4px; top: -4px; }
-
-/* Stats bar */
 .stats-bar { background: var(--surface); border-top: 0.5px solid var(--border); padding: 10px 16px; display: flex; gap: 20px; flex-shrink: 0; }
 .stat-item .val { font-size: 16px; font-weight: 500; }
 .stat-item .lbl { font-size: 10px; color: var(--muted); }
-
-/* ── TASKS VIEW ── */
 .tasks-view { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; padding: 12px; }
 .add-card { background: var(--surface); border-radius: 12px; border: 0.5px solid var(--border); padding: 14px; margin-bottom: 12px; }
 .add-card input { width: 100%; font-size: 15px; border: none; background: none; color: var(--accent); outline: none; padding: 0 0 10px; border-bottom: 0.5px solid var(--border); }
@@ -89,7 +60,6 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
 .dur-btn { font-size: 12px; padding: 5px 12px; border: 0.5px solid var(--border); border-radius: 20px; background: none; color: var(--accent2); cursor: pointer; transition: all 0.15s; }
 .dur-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 .add-btn-full { width: 100%; padding: 10px; font-size: 14px; border: 0.5px solid var(--border2); border-radius: 8px; background: none; color: var(--accent); cursor: pointer; }
-.task-list-section { margin-bottom: 12px; }
 .section-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 4px; margin-bottom: 6px; }
 .task-card { background: var(--surface); border-radius: 10px; border: 0.5px solid var(--border); padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; }
 .task-card.selected { border-color: var(--border2); background: var(--bg); }
@@ -100,8 +70,6 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
 .task-del-btn { width: 28px; height: 28px; border: none; background: none; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .place-hint { background: #e6f1fb; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #185fa5; margin-bottom: 8px; display: none; }
 .place-hint.show { display: block; }
-
-/* ── TIMER VIEW ── */
 .timer-view { align-items: center; justify-content: center; padding: 32px 24px; background: var(--bg); }
 .timer-circle-wrap { position: relative; width: 200px; height: 200px; margin-bottom: 28px; }
 .timer-svg { width: 200px; height: 200px; transform: rotate(-90deg); }
@@ -110,7 +78,6 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
 .timer-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .timer-time { font-size: 42px; font-weight: 300; letter-spacing: -2px; font-variant-numeric: tabular-nums; }
 .timer-task-label { font-size: 13px; color: var(--muted); margin-top: 4px; max-width: 150px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.timer-task-select { font-size: 14px; color: var(--muted); margin-bottom: 24px; text-align: center; }
 .timer-controls { display: flex; gap: 12px; width: 100%; max-width: 280px; }
 .timer-btn { flex: 1; padding: 14px; font-size: 15px; border-radius: 12px; border: 0.5px solid var(--border2); background: none; color: var(--accent); cursor: pointer; }
 .timer-btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 500; }
@@ -120,8 +87,6 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
 .picker-dot { width: 8px; height: 8px; border-radius: 50%; }
 .picker-name { font-size: 14px; flex: 1; }
 .picker-dur { font-size: 12px; color: var(--muted); }
-
-/* ── REVIEW VIEW ── */
 .review-view { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; padding: 16px; }
 .review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 .review-stat { background: var(--surface); border-radius: 10px; border: 0.5px solid var(--border); padding: 12px 10px; text-align: center; }
@@ -136,47 +101,29 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
 .rev-bar-wrap { width: 60px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
 .rev-bar { height: 100%; border-radius: 2px; }
 .rev-dur { font-size: 12px; color: var(--muted); min-width: 36px; text-align: right; }
-
-/* Modal */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: flex-end; }
-.modal-overlay.open { display: flex; }
-.modal { background: var(--surface); border-radius: 16px 16px 0 0; width: 100%; padding: 20px 20px calc(20px + var(--safe-bottom)); }
-.modal h2 { font-size: 15px; font-weight: 500; margin-bottom: 14px; }
-.modal-row { display: flex; gap: 8px; margin-bottom: 10px; }
-.modal-row input { flex: 1; font-size: 15px; padding: 8px 12px; border: 0.5px solid var(--border2); border-radius: 8px; background: var(--bg); color: var(--accent); outline: none; }
-.modal-btn { padding: 8px 16px; border-radius: 8px; border: 0.5px solid var(--border2); background: var(--accent); color: var(--bg); font-size: 14px; cursor: pointer; }
-
-/* Toast */
 .toast { position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--bg); padding: 8px 18px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all 0.25s; z-index: 200; white-space: nowrap; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* Bottom nav */
 .bottom-nav { display: flex; background: var(--surface); border-top: 0.5px solid var(--border); flex-shrink: 0; padding-bottom: var(--safe-bottom); }
 .bot-tab { flex: 1; padding: 10px 0 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; border: none; background: none; cursor: pointer; }
 .bot-tab .icon { font-size: 20px; }
 .bot-tab .label { font-size: 10px; color: var(--muted); }
 .bot-tab.active .label { color: var(--accent); font-weight: 500; }
-.bot-tab.active .icon { filter: none; }
 </style>
 </head>
 <body>
-
 <div class="app">
   <div class="header">
     <div class="header-left">
-      <h1>时间盒</h1>
+      <h1>时间盒 <span class="sync-dot loading" id="sync-dot"></span></h1>
       <div class="date-str" id="date-str"></div>
     </div>
-    <div class="header-right">
-      <div class="date-nav">
-        <button class="nav-arrow" onclick="changeDay(-1)">‹</button>
-        <button class="hdr-btn" id="day-label" onclick="goToday()">今天</button>
-        <button class="nav-arrow" onclick="changeDay(1)">›</button>
-      </div>
+    <div class="date-nav">
+      <button class="nav-arrow" onclick="changeDay(-1)">‹</button>
+      <button class="hdr-btn" id="day-label" onclick="goToday()">今天</button>
+      <button class="nav-arrow" onclick="changeDay(1)">›</button>
     </div>
   </div>
 
-  <!-- Timeline view -->
   <div class="view active" id="view-timeline">
     <div class="tl-wrap" id="tl-wrap">
       <div class="tl-grid">
@@ -191,7 +138,6 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
     </div>
   </div>
 
-  <!-- Tasks view -->
   <div class="view" id="view-tasks">
     <div class="tasks-view">
       <div class="place-hint" id="place-hint">👆 已选中任务，切到"今日"点击时间轴放置</div>
@@ -206,21 +152,17 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
         </div>
         <button class="add-btn-full" onclick="addTask()">+ 添加任务</button>
       </div>
-      <div class="task-list-section">
-        <div class="section-label">任务库</div>
-        <div id="task-list"></div>
-      </div>
+      <div class="section-label">任务库</div>
+      <div id="task-list"></div>
     </div>
   </div>
 
-  <!-- Timer view -->
   <div class="view" id="view-timer">
     <div class="timer-view">
       <div class="timer-circle-wrap">
         <svg class="timer-svg" viewBox="0 0 200 200">
           <circle class="timer-track" cx="100" cy="100" r="88"/>
-          <circle class="timer-prog" id="timer-prog" cx="100" cy="100" r="88"
-            stroke-dasharray="553" stroke-dashoffset="0"/>
+          <circle class="timer-prog" id="timer-prog" cx="100" cy="100" r="88" stroke-dasharray="553" stroke-dashoffset="0"/>
         </svg>
         <div class="timer-center">
           <div class="timer-time" id="timer-display">—</div>
@@ -235,396 +177,332 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
     </div>
   </div>
 
-  <!-- Review view -->
   <div class="view" id="view-review">
     <div class="review-view" id="review-content"></div>
   </div>
 
   <nav class="bottom-nav">
-    <button class="bot-tab active" onclick="switchTab('timeline', this)">
-      <div class="icon">🗓</div><div class="label">今日</div>
-    </button>
-    <button class="bot-tab" onclick="switchTab('tasks', this)">
-      <div class="icon">📋</div><div class="label">任务</div>
-    </button>
-    <button class="bot-tab" onclick="switchTab('timer', this)">
-      <div class="icon">⏱</div><div class="label">计时</div>
-    </button>
-    <button class="bot-tab" onclick="switchTab('review', this)">
-      <div class="icon">📊</div><div class="label">复盘</div>
-    </button>
+    <button class="bot-tab active" onclick="switchTab('timeline',this)"><div class="icon">🗓</div><div class="label">今日</div></button>
+    <button class="bot-tab" onclick="switchTab('tasks',this)"><div class="icon">📋</div><div class="label">任务</div></button>
+    <button class="bot-tab" onclick="switchTab('timer',this)"><div class="icon">⏱</div><div class="label">计时</div></button>
+    <button class="bot-tab" onclick="switchTab('review',this)"><div class="icon">📊</div><div class="label">复盘</div></button>
   </nav>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
+const SUPABASE_URL = 'https://pugkgopkiutyabjsgzvn.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_3pWpGpikwicPLcq0wKunhA_s9MNaCfY';
+
+let DEVICE_ID = localStorage.getItem('tb_device_id');
+if (!DEVICE_ID) { DEVICE_ID = 'dev_' + Math.random().toString(36).slice(2); localStorage.setItem('tb_device_id', DEVICE_ID); }
+
 const COLORS = [
-  {bg:'#1a1a1a',text:'#f5f5f3'},
-  {bg:'#9FE1CB',text:'#085041'},
-  {bg:'#CECBF6',text:'#26215C'},
-  {bg:'#FAC775',text:'#412402'},
-  {bg:'#F5C4B3',text:'#4A1B0C'},
-  {bg:'#B5D4F4',text:'#042C53'},
-  {bg:'#F4C0D1',text:'#4B1528'},
-  {bg:'#C0DD97',text:'#173404'},
+  {bg:'#1a1a1a',text:'#f5f5f3'},{bg:'#9FE1CB',text:'#085041'},
+  {bg:'#CECBF6',text:'#26215C'},{bg:'#FAC775',text:'#412402'},
+  {bg:'#F5C4B3',text:'#4A1B0C'},{bg:'#B5D4F4',text:'#042C53'},
+  {bg:'#F4C0D1',text:'#4B1528'},{bg:'#C0DD97',text:'#173404'},
 ];
 
-const START_H = 7, TOTAL_H = 17;
-const HOUR_H = 60;
-let tasks = [], dayBlocks = {}, nextId = 1, colorIdx = 0;
+const START_H = 7, TOTAL_H = 17, HOUR_H = 60;
+let tasks = [], dayBlocks = {}, colorIdx = 0;
 let selectedDur = 30, activeTaskId = null;
 let currentDate = new Date(); currentDate.setHours(0,0,0,0);
-let timerInterval = null, timerRemaining = 0, timerTotal = 0, timerRunning = false, timerBlockId = null;
+let timerInterval = null, timerRemaining = 0, timerTotal = 0, timerRunning = false, timerPickedTaskId = null;
 let touchDragBlock = null, touchDragOffsetY = 0;
 
-// ── Storage ──
-function save() {
-  try {
-    localStorage.setItem('tb_tasks', JSON.stringify(tasks));
-    localStorage.setItem('tb_blocks', JSON.stringify(dayBlocks));
-    localStorage.setItem('tb_nextid', nextId);
-  } catch(e) {}
-}
-function load() {
-  try {
-    const t = localStorage.getItem('tb_tasks');
-    const b = localStorage.getItem('tb_blocks');
-    const n = localStorage.getItem('tb_nextid');
-    if(t) tasks = JSON.parse(t);
-    if(b) dayBlocks = JSON.parse(b);
-    if(n) nextId = parseInt(n);
-    colorIdx = tasks.length % COLORS.length;
-  } catch(e) {}
+async function sbFetch(path, method='GET', body=null) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    method,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : ''
+    },
+    body: body ? JSON.stringify(body) : null
+  });
+  if (!res.ok) throw new Error(await res.text());
+  if (method === 'DELETE' || res.status === 204) return null;
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 }
 
-// ── Helpers ──
+function setSyncDot(state) { document.getElementById('sync-dot').className = 'sync-dot ' + state; }
+
+async function loadAll() {
+  setSyncDot('loading');
+  try {
+    const [t, b] = await Promise.all([
+      sbFetch('tasks?device_id=eq.' + DEVICE_ID + '&order=id.asc'),
+      sbFetch('blocks?device_id=eq.' + DEVICE_ID + '&order=id.asc')
+    ]);
+    tasks = (t||[]).map(r => ({id:r.id, name:r.name, duration:r.duration, color:{bg:r.color_bg, text:r.color_text}}));
+    colorIdx = tasks.length % COLORS.length;
+    dayBlocks = {};
+    (b||[]).forEach(r => {
+      if (!dayBlocks[r.day_key]) dayBlocks[r.day_key] = [];
+      dayBlocks[r.day_key].push({id:r.id, name:r.name, duration:r.duration, color:{bg:r.color_bg, text:r.color_text}, taskId:r.task_id, day_key:r.day_key, h:r.hour, m:r.minute, done:r.done});
+    });
+    setSyncDot('ok');
+    renderTasks(); renderTimeline(); updateStats(); renderPicker();
+  } catch(e) { setSyncDot('err'); showToast('同步失败，请检查网络'); }
+}
+
 function pad(n) { return String(n).padStart(2,'0'); }
 function dayKey(d) { return d.toISOString().slice(0,10); }
 function hourToTop(h, m=0) { return (h - START_H + m/60) * HOUR_H; }
 function topToTime(px) {
-  const mins = Math.round((px / HOUR_H) * 60 / 15) * 15;
-  const h = Math.floor(mins / 60) + START_H;
-  const m = mins % 60;
-  return { h: Math.min(Math.max(h, START_H), START_H + TOTAL_H - 1), m: m % 60 };
+  const mins = Math.round((px/HOUR_H)*60/15)*15;
+  const h = Math.floor(mins/60)+START_H, m = mins%60;
+  return {h:Math.min(Math.max(h,START_H),START_H+TOTAL_H-1), m:m%60};
 }
-function fmtDur(min) { return min >= 60 ? (min % 60 === 0 ? min/60 + 'h' : (min/60).toFixed(1) + 'h') : min + 'm'; }
+function fmtDur(min) { return min>=60?(min%60===0?min/60+'h':(min/60).toFixed(1)+'h'):min+'m'; }
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
 }
 
-// ── Date ──
 function updateHeader() {
-  const now = new Date(); now.setHours(0,0,0,0);
-  const diff = Math.round((currentDate - now) / 86400000);
-  const wd = ['日','一','二','三','四','五','六'][currentDate.getDay()];
-  const dayLbl = diff===0 ? '今天' : diff===1 ? '明天' : diff===-1 ? '昨天' :
-    `${currentDate.getMonth()+1}/${currentDate.getDate()}`;
-  document.getElementById('day-label').textContent = dayLbl;
-  document.getElementById('date-str').textContent =
-    `${currentDate.getFullYear()}年${currentDate.getMonth()+1}月${currentDate.getDate()}日 周${wd}`;
+  const now=new Date(); now.setHours(0,0,0,0);
+  const diff=Math.round((currentDate-now)/86400000);
+  const wd=['日','一','二','三','四','五','六'][currentDate.getDay()];
+  document.getElementById('day-label').textContent=diff===0?'今天':diff===1?'明天':diff===-1?'昨天':`${currentDate.getMonth()+1}/${currentDate.getDate()}`;
+  document.getElementById('date-str').textContent=`${currentDate.getFullYear()}年${currentDate.getMonth()+1}月${currentDate.getDate()}日 周${wd}`;
 }
-function changeDay(d) {
-  currentDate = new Date(currentDate.getTime() + d*86400000);
-  updateHeader(); renderTimeline(); updateStats();
-}
-function goToday() {
-  currentDate = new Date(); currentDate.setHours(0,0,0,0);
-  updateHeader(); renderTimeline(); updateStats();
-}
+function changeDay(d) { currentDate=new Date(currentDate.getTime()+d*86400000); updateHeader(); renderTimeline(); updateStats(); }
+function goToday() { currentDate=new Date(); currentDate.setHours(0,0,0,0); updateHeader(); renderTimeline(); updateStats(); }
 
-// ── Tab switching ──
 function switchTab(name, btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.bot-tab').forEach(b => b.classList.remove('active'));
-  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.bot-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
   btn.classList.add('active');
-  if(name === 'review') renderReview();
-  if(name === 'timer') renderPicker();
-  if(name === 'tasks') updatePlaceHint();
+  if(name==='review') renderReview();
+  if(name==='timer') renderPicker();
+  if(name==='tasks') updatePlaceHint();
 }
 
-// ── Timeline ──
 function buildTimelineDOM() {
-  const labels = document.getElementById('tl-labels');
-  const slots = document.getElementById('tl-slots');
-  labels.innerHTML = '';
-  slots.querySelectorAll('.tl-hour').forEach(e => e.remove());
-  for(let h = START_H; h <= START_H + TOTAL_H; h++) {
-    const lbl = document.createElement('div');
-    lbl.className = 'tl-label';
-    lbl.textContent = h < 24 ? `${h}:00` : '';
+  const labels=document.getElementById('tl-labels');
+  const slots=document.getElementById('tl-slots');
+  labels.innerHTML='';
+  slots.querySelectorAll('.tl-hour').forEach(e=>e.remove());
+  for(let h=START_H; h<=START_H+TOTAL_H; h++) {
+    const lbl=document.createElement('div'); lbl.className='tl-label'; lbl.textContent=h<24?`${h}:00`:'';
     labels.appendChild(lbl);
-    const line = document.createElement('div');
-    line.className = 'tl-hour';
-    line.dataset.hour = h;
+    const line=document.createElement('div'); line.className='tl-hour'; line.dataset.hour=h;
     slots.insertBefore(line, slots.firstChild);
   }
-  slots.style.height = (TOTAL_H + 1) * HOUR_H + 'px';
-
-  // Tap to place
-  slots.addEventListener('click', e => {
+  slots.style.height=(TOTAL_H+1)*HOUR_H+'px';
+  slots.addEventListener('click', e=>{
     if(e.target.closest('.block')) return;
-    if(!activeTaskId) { showToast('请先在"任务"中选择一个任务'); return; }
-    const task = tasks.find(t => t.id === activeTaskId);
+    if(!activeTaskId) { showToast('请先在"任务"中选择任务'); return; }
+    const task=tasks.find(t=>t.id===activeTaskId);
     if(!task) return;
-    const rect = slots.getBoundingClientRect();
-    const y = e.clientY - rect.top;
-    const {h, m} = topToTime(Math.max(0, y));
-    placeBlock(task, h, m);
+    const rect=slots.getBoundingClientRect();
+    const {h,m}=topToTime(Math.max(0,e.clientY-rect.top));
+    placeBlock(task,h,m);
   });
-
-  // Touch drag for blocks
-  slots.addEventListener('touchstart', onBlockTouchStart, {passive: false});
-  slots.addEventListener('touchmove', onBlockTouchMove, {passive: false});
+  slots.addEventListener('touchstart', onBlockTouchStart, {passive:false});
+  slots.addEventListener('touchmove', onBlockTouchMove, {passive:false});
   slots.addEventListener('touchend', onBlockTouchEnd);
 }
 
 function renderTimeline() {
-  const slots = document.getElementById('tl-slots');
-  slots.querySelectorAll('.block, .now-line').forEach(e => e.remove());
-  const key = dayKey(currentDate);
-  (dayBlocks[key] || []).forEach(block => {
-    const el = document.createElement('div');
-    el.className = 'block';
-    el.dataset.id = block.id;
-    const top = hourToTop(block.h, block.m);
-    const h = Math.max((block.duration / 60) * HOUR_H, 28);
-    el.style.cssText = `top:${top}px;height:${h}px;background:${block.color.bg};`;
-    el.innerHTML = `<div class="block-inner">
-      <div class="block-name" style="color:${block.color.text}">${block.done ? '✓ ' : ''}${block.name}</div>
-      ${h > 40 ? `<div class="block-time-tag" style="color:${block.color.text}">${pad(block.h)}:${pad(block.m)} · ${fmtDur(block.duration)}</div>` : ''}
+  const slots=document.getElementById('tl-slots');
+  slots.querySelectorAll('.block,.now-line').forEach(e=>e.remove());
+  const key=dayKey(currentDate);
+  (dayBlocks[key]||[]).forEach(block=>{
+    const el=document.createElement('div'); el.className='block'; el.dataset.id=block.id;
+    const top=hourToTop(block.h,block.m), h=Math.max((block.duration/60)*HOUR_H,28);
+    el.style.cssText=`top:${top}px;height:${h}px;background:${block.color.bg};`;
+    el.innerHTML=`<div class="block-inner">
+      <div class="block-name" style="color:${block.color.text}">${block.done?'✓ ':''}${block.name}</div>
+      ${h>40?`<div class="block-time-tag" style="color:${block.color.text}">${pad(block.h)}:${pad(block.m)} · ${fmtDur(block.duration)}</div>`:''}
     </div>`;
-    el.addEventListener('click', e => { e.stopPropagation(); openBlockMenu(block); });
+    el.addEventListener('click', e=>{e.stopPropagation(); if(confirm('删除「'+block.name+'」？')) deleteBlock(block);});
     slots.appendChild(el);
   });
-  // Now line
-  const now = new Date();
-  if(dayKey(currentDate) === dayKey(now)) {
-    const nl = document.createElement('div');
-    nl.className = 'now-line';
-    nl.style.top = hourToTop(now.getHours(), now.getMinutes()) + 'px';
-    nl.innerHTML = '<div class="now-dot"></div>';
-    slots.appendChild(nl);
+  const now=new Date();
+  if(dayKey(currentDate)===dayKey(now)) {
+    const nl=document.createElement('div'); nl.className='now-line'; nl.style.top=hourToTop(now.getHours(),now.getMinutes())+'px';
+    nl.innerHTML='<div class="now-dot"></div>'; slots.appendChild(nl);
   }
 }
 
-function placeBlock(task, h, m) {
-  const key = dayKey(currentDate);
-  if(!dayBlocks[key]) dayBlocks[key] = [];
-  dayBlocks[key].push({id: nextId++, name: task.name, duration: task.duration, color: task.color, h, m, taskId: task.id, done: false});
-  save(); renderTimeline(); updateStats();
-  showToast(`已放置 ${pad(h)}:${pad(m)}`);
+async function placeBlock(task,h,m) {
+  const key=dayKey(currentDate);
+  setSyncDot('loading');
+  try {
+    const res=await sbFetch('blocks','POST',{device_id:DEVICE_ID,task_id:task.id,name:task.name,duration:task.duration,color_bg:task.color.bg,color_text:task.color.text,day_key:key,hour:h,minute:m,done:false});
+    const saved=res[0];
+    if(!dayBlocks[key]) dayBlocks[key]=[];
+    dayBlocks[key].push({id:saved.id,name:task.name,duration:task.duration,color:task.color,taskId:task.id,day_key:key,h,m,done:false});
+    setSyncDot('ok'); renderTimeline(); updateStats(); showToast('已放置 '+pad(h)+':'+pad(m));
+  } catch(e) { setSyncDot('err'); showToast('放置失败'); }
 }
 
-function openBlockMenu(block) {
-  const actions = ['开始计时', '标记完成', '删除'];
-  const chosen = confirm(`「${block.name}」\n${pad(block.h)}:${pad(block.m)} · ${fmtDur(block.duration)}\n\n点确定删除，取消保留`);
-  if(chosen) deleteBlock(block.id);
+async function deleteBlock(block) {
+  setSyncDot('loading');
+  try {
+    await sbFetch('blocks?id=eq.'+block.id,'DELETE');
+    const key=dayKey(currentDate);
+    dayBlocks[key]=(dayBlocks[key]||[]).filter(b=>b.id!==block.id);
+    setSyncDot('ok'); renderTimeline(); updateStats();
+  } catch(e) { setSyncDot('err'); showToast('删除失败'); }
 }
 
-function deleteBlock(id) {
-  const key = dayKey(currentDate);
-  dayBlocks[key] = (dayBlocks[key]||[]).filter(b => b.id !== id);
-  save(); renderTimeline(); updateStats();
-}
-
-// Touch drag
 function onBlockTouchStart(e) {
-  const block = e.target.closest('.block');
-  if(!block) return;
-  touchDragBlock = parseInt(block.dataset.id);
-  const rect = block.getBoundingClientRect();
-  touchDragOffsetY = e.touches[0].clientY - rect.top;
+  const block=e.target.closest('.block'); if(!block) return;
+  touchDragBlock=parseInt(block.dataset.id);
+  touchDragOffsetY=e.touches[0].clientY-block.getBoundingClientRect().top;
 }
 function onBlockTouchMove(e) {
-  if(!touchDragBlock) return;
-  e.preventDefault();
-  const slots = document.getElementById('tl-slots');
-  const rect = slots.getBoundingClientRect();
-  const y = e.touches[0].clientY - rect.top - touchDragOffsetY;
-  const {h, m} = topToTime(Math.max(0, y));
-  const key = dayKey(currentDate);
-  const b = (dayBlocks[key]||[]).find(b => b.id === touchDragBlock);
-  if(b) { b.h = h; b.m = m; renderTimeline(); }
+  if(!touchDragBlock) return; e.preventDefault();
+  const slots=document.getElementById('tl-slots');
+  const rect=slots.getBoundingClientRect();
+  const {h,m}=topToTime(Math.max(0,e.touches[0].clientY-rect.top-touchDragOffsetY));
+  const key=dayKey(currentDate);
+  const b=(dayBlocks[key]||[]).find(b=>b.id===touchDragBlock);
+  if(b) { b.h=h; b.m=m; renderTimeline(); }
 }
-function onBlockTouchEnd() {
-  if(touchDragBlock) { save(); touchDragBlock = null; }
+async function onBlockTouchEnd() {
+  if(!touchDragBlock) return;
+  const key=dayKey(currentDate);
+  const b=(dayBlocks[key]||[]).find(b=>b.id===touchDragBlock);
+  if(b) {
+    setSyncDot('loading');
+    try { await sbFetch('blocks?id=eq.'+b.id,'PATCH',{hour:b.h,minute:b.m}); setSyncDot('ok'); }
+    catch(e) { setSyncDot('err'); }
+  }
+  touchDragBlock=null;
 }
 
-// ── Tasks ──
-function addTask() {
-  const input = document.getElementById('task-input');
-  const name = input.value.trim();
-  if(!name) { input.focus(); return; }
-  const color = COLORS[colorIdx++ % COLORS.length];
-  tasks.push({id: nextId++, name, duration: selectedDur, color});
-  input.value = '';
-  save(); renderTasks();
+async function addTask() {
+  const input=document.getElementById('task-input');
+  const name=input.value.trim(); if(!name) { input.focus(); return; }
+  const color=COLORS[colorIdx++%COLORS.length];
+  setSyncDot('loading');
+  try {
+    const res=await sbFetch('tasks','POST',{device_id:DEVICE_ID,name,duration:selectedDur,color_bg:color.bg,color_text:color.text});
+    tasks.push({id:res[0].id,name,duration:selectedDur,color});
+    input.value=''; setSyncDot('ok'); renderTasks(); renderPicker();
+  } catch(e) { setSyncDot('err'); showToast('添加失败'); }
 }
-function deleteTask(id) {
-  if(activeTaskId === id) activeTaskId = null;
-  tasks = tasks.filter(t => t.id !== id);
-  save(); renderTasks(); renderPicker();
+
+async function deleteTask(id) {
+  setSyncDot('loading');
+  try {
+    await sbFetch('tasks?id=eq.'+id,'DELETE');
+    if(activeTaskId===id) activeTaskId=null;
+    tasks=tasks.filter(t=>t.id!==id);
+    setSyncDot('ok'); renderTasks(); renderPicker();
+  } catch(e) { setSyncDot('err'); showToast('删除失败'); }
 }
-function selectTask(id) {
-  activeTaskId = activeTaskId === id ? null : id;
-  renderTasks(); updatePlaceHint();
-}
-function updatePlaceHint() {
-  document.getElementById('place-hint').classList.toggle('show', !!activeTaskId);
-}
+
+function selectTask(id) { activeTaskId=activeTaskId===id?null:id; renderTasks(); updatePlaceHint(); }
+function updatePlaceHint() { document.getElementById('place-hint').classList.toggle('show',!!activeTaskId); }
 function renderTasks() {
-  const list = document.getElementById('task-list');
-  if(tasks.length === 0) {
-    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:14px;padding:24px 0">暂无任务，添加一个吧</div>';
-    return;
-  }
-  list.innerHTML = '';
-  tasks.forEach(task => {
-    const el = document.createElement('div');
-    el.className = 'task-card' + (activeTaskId === task.id ? ' selected' : '');
-    el.innerHTML = `<div class="task-dot" style="background:${task.color.bg};border:1.5px solid ${task.color.text}44"></div>
+  const list=document.getElementById('task-list');
+  if(!tasks.length) { list.innerHTML='<div style="text-align:center;color:var(--muted);font-size:14px;padding:24px 0">暂无任务，添加一个吧</div>'; return; }
+  list.innerHTML='';
+  tasks.forEach(task=>{
+    const el=document.createElement('div');
+    el.className='task-card'+(activeTaskId===task.id?' selected':'');
+    el.innerHTML=`<div class="task-dot" style="background:${task.color.bg};border:1.5px solid ${task.color.text}44"></div>
       <div class="task-info"><div class="name">${task.name}</div><div class="dur">${fmtDur(task.duration)}</div></div>
       <button class="task-del-btn" onclick="deleteTask(${task.id});event.stopPropagation()">×</button>`;
-    el.addEventListener('click', () => selectTask(task.id));
+    el.addEventListener('click',()=>selectTask(task.id));
     list.appendChild(el);
   });
 }
 
-// ── Timer ──
 function renderPicker() {
-  const picker = document.getElementById('task-picker');
-  picker.innerHTML = tasks.length ? '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">选择任务</div>' : '';
-  tasks.forEach(task => {
-    const el = document.createElement('div');
-    el.className = 'picker-task' + (timerBlockId === task.id ? ' selected' : '');
-    el.innerHTML = `<div class="picker-dot" style="background:${task.color.bg};border:1.5px solid ${task.color.text}44"></div>
-      <div class="picker-name">${task.name}</div>
-      <div class="picker-dur">${fmtDur(task.duration)}</div>`;
-    el.addEventListener('click', () => loadTimer(task));
+  const picker=document.getElementById('task-picker');
+  picker.innerHTML=tasks.length?'<div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">选择任务</div>':'';
+  tasks.forEach(task=>{
+    const el=document.createElement('div');
+    el.className='picker-task'+(timerPickedTaskId===task.id?' selected':'');
+    el.innerHTML=`<div class="picker-dot" style="background:${task.color.bg};border:1.5px solid ${task.color.text}44"></div>
+      <div class="picker-name">${task.name}</div><div class="picker-dur">${fmtDur(task.duration)}</div>`;
+    el.addEventListener('click',()=>loadTimer(task));
     picker.appendChild(el);
   });
 }
 function loadTimer(task) {
-  if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-  timerRunning = false;
-  timerRemaining = task.duration * 60;
-  timerTotal = task.duration * 60;
-  timerBlockId = task.id;
-  document.getElementById('timer-task-label').textContent = task.name;
-  document.getElementById('timer-start-btn').textContent = '开始';
+  if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+  timerRunning=false; timerPickedTaskId=task.id;
+  timerRemaining=task.duration*60; timerTotal=task.duration*60;
+  document.getElementById('timer-task-label').textContent=task.name;
+  document.getElementById('timer-start-btn').textContent='开始';
   updateTimerDisplay(); renderPicker();
 }
 function toggleTimer() {
-  if(timerTotal === 0) { showToast('请先选择任务'); return; }
-  timerRunning = !timerRunning;
+  if(timerTotal===0){showToast('请先选择任务');return;}
+  timerRunning=!timerRunning;
   if(timerRunning) {
-    document.getElementById('timer-start-btn').textContent = '暂停';
-    timerInterval = setInterval(() => {
-      timerRemaining = Math.max(0, timerRemaining - 1);
-      updateTimerDisplay();
-      if(timerRemaining === 0) {
-        clearInterval(timerInterval); timerInterval = null; timerRunning = false;
-        document.getElementById('timer-start-btn').textContent = '完成 ✓';
-        document.getElementById('timer-task-label').textContent = '时间到！';
-        try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA...').play(); } catch(e) {}
-      }
-    }, 1000);
-  } else {
-    clearInterval(timerInterval); timerInterval = null;
-    document.getElementById('timer-start-btn').textContent = '继续';
-  }
+    document.getElementById('timer-start-btn').textContent='暂停';
+    timerInterval=setInterval(()=>{
+      timerRemaining=Math.max(0,timerRemaining-1); updateTimerDisplay();
+      if(timerRemaining===0){clearInterval(timerInterval);timerInterval=null;timerRunning=false;document.getElementById('timer-start-btn').textContent='完成 ✓';showToast('⏰ 时间到！');}
+    },1000);
+  } else { clearInterval(timerInterval);timerInterval=null;document.getElementById('timer-start-btn').textContent='继续'; }
 }
 function resetTimer() {
-  clearInterval(timerInterval); timerInterval = null; timerRunning = false;
-  timerRemaining = timerTotal;
-  document.getElementById('timer-start-btn').textContent = '开始';
-  if(timerTotal > 0) {
-    const task = tasks.find(t => t.id === timerBlockId);
-    if(task) document.getElementById('timer-task-label').textContent = task.name;
-  } else {
-    document.getElementById('timer-task-label').textContent = '选择任务';
-  }
+  clearInterval(timerInterval);timerInterval=null;timerRunning=false;timerRemaining=timerTotal;
+  document.getElementById('timer-start-btn').textContent='开始';
+  const task=tasks.find(t=>t.id===timerPickedTaskId);
+  document.getElementById('timer-task-label').textContent=task?task.name:'选择任务';
   updateTimerDisplay();
 }
 function updateTimerDisplay() {
-  const m = Math.floor(timerRemaining / 60);
-  const s = timerRemaining % 60;
-  document.getElementById('timer-display').textContent = timerTotal > 0 ? `${pad(m)}:${pad(s)}` : '—';
-  const circ = 2 * Math.PI * 88;
-  const pct = timerTotal > 0 ? timerRemaining / timerTotal : 1;
-  document.getElementById('timer-prog').style.strokeDashoffset = circ * (1 - pct);
+  const m=Math.floor(timerRemaining/60),s=timerRemaining%60;
+  document.getElementById('timer-display').textContent=timerTotal>0?pad(m)+':'+pad(s):'—';
+  document.getElementById('timer-prog').style.strokeDashoffset=2*Math.PI*88*(timerTotal>0?timerRemaining/timerTotal:1);
 }
 
-// ── Stats ──
 function updateStats() {
-  const key = dayKey(currentDate);
-  const blocks = dayBlocks[key] || [];
-  const total = blocks.reduce((s, b) => s + b.duration, 0);
-  const done = blocks.filter(b => b.done).length;
-  document.getElementById('stat-blocks').textContent = blocks.length;
-  document.getElementById('stat-hours').textContent = fmtDur(total);
-  document.getElementById('stat-done').textContent = `${done}/${blocks.length}`;
+  const key=dayKey(currentDate),blocks=dayBlocks[key]||[];
+  const total=blocks.reduce((s,b)=>s+b.duration,0),done=blocks.filter(b=>b.done).length;
+  document.getElementById('stat-blocks').textContent=blocks.length;
+  document.getElementById('stat-hours').textContent=fmtDur(total);
+  document.getElementById('stat-done').textContent=done+'/'+blocks.length;
 }
 
-// ── Review ──
 function renderReview() {
-  const key = dayKey(currentDate);
-  const blocks = (dayBlocks[key] || []).slice().sort((a, b) => a.h * 60 + a.m - (b.h * 60 + b.m));
-  const total = blocks.reduce((s, b) => s + b.duration, 0);
-  const done = blocks.filter(b => b.done).length;
-  const content = document.getElementById('review-content');
-  content.innerHTML = `
-    <div class="review-grid">
-      <div class="review-stat"><div class="val">${blocks.length}</div><div class="lbl">时间块</div></div>
-      <div class="review-stat"><div class="val">${fmtDur(total)}</div><div class="lbl">规划时长</div></div>
-      <div class="review-stat"><div class="val">${done}/${blocks.length}</div><div class="lbl">已完成</div></div>
-    </div>
-    ${blocks.length === 0 ? '<div class="review-empty">今天还没有时间块<br><span style="font-size:12px">去「今日」放置任务吧</span></div>' : ''}
-  `;
-  blocks.forEach(block => {
-    const pct = total > 0 ? Math.round(block.duration / total * 100) : 0;
-    const row = document.createElement('div');
-    row.className = 'review-row';
-    row.innerHTML = `<div class="rev-dot" style="background:${block.color.bg};border:1.5px solid ${block.color.text}44"></div>
-      <div class="rev-info">
-        <div class="rev-name">${block.done ? '✓ ' : ''}${block.name}</div>
-        <div class="rev-meta">${pad(block.h)}:${pad(block.m)}</div>
-      </div>
-      <div class="rev-bar-wrap"><div class="rev-bar" style="width:${pct}%;background:${block.color.bg};border:1px solid ${block.color.text}33"></div></div>
+  const key=dayKey(currentDate);
+  const blocks=(dayBlocks[key]||[]).slice().sort((a,b)=>a.h*60+a.m-(b.h*60+b.m));
+  const total=blocks.reduce((s,b)=>s+b.duration,0),done=blocks.filter(b=>b.done).length;
+  const content=document.getElementById('review-content');
+  content.innerHTML=`<div class="review-grid">
+    <div class="review-stat"><div class="val">${blocks.length}</div><div class="lbl">时间块</div></div>
+    <div class="review-stat"><div class="val">${fmtDur(total)}</div><div class="lbl">规划时长</div></div>
+    <div class="review-stat"><div class="val">${done}/${blocks.length}</div><div class="lbl">已完成</div></div>
+  </div>${blocks.length===0?'<div class="review-empty">今天还没有时间块</div>':''}`;
+  blocks.forEach(block=>{
+    const pct=total>0?Math.round(block.duration/total*100):0;
+    const row=document.createElement('div'); row.className='review-row';
+    row.innerHTML=`<div class="rev-dot" style="background:${block.color.bg}"></div>
+      <div class="rev-info"><div class="rev-name">${block.done?'✓ ':''}${block.name}</div><div class="rev-meta">${pad(block.h)}:${pad(block.m)}</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar" style="width:${pct}%;background:${block.color.bg}"></div></div>
       <div class="rev-dur">${fmtDur(block.duration)}</div>`;
     content.appendChild(row);
   });
 }
 
-// ── Dur buttons ──
-document.getElementById('dur-row').addEventListener('click', e => {
-  if(e.target.dataset.min) {
-    selectedDur = parseInt(e.target.dataset.min);
-    document.querySelectorAll('.dur-btn').forEach(b => b.classList.toggle('active', b.dataset.min == e.target.dataset.min));
-  }
+document.getElementById('dur-row').addEventListener('click',e=>{
+  if(e.target.dataset.min){selectedDur=parseInt(e.target.dataset.min);document.querySelectorAll('.dur-btn').forEach(b=>b.classList.toggle('active',b.dataset.min==e.target.dataset.min));}
 });
-document.getElementById('task-input').addEventListener('keydown', e => { if(e.key === 'Enter') addTask(); });
-
-// ── Init ──
-function init() {
-  load();
-  buildTimelineDOM();
-  renderTimeline();
-  renderTasks();
-  updateHeader();
-  updateStats();
-  updateTimerDisplay();
-  // Scroll to current hour
-  const wrap = document.getElementById('tl-wrap');
-  const now = new Date();
-  if(now.getHours() >= START_H) wrap.scrollTop = Math.max(0, hourToTop(now.getHours()) - 80);
-  setInterval(() => { renderTimeline(); }, 60000);
-}
-init();
+document.getElementById('task-input').addEventListener('keydown',e=>{if(e.key==='Enter')addTask();});
+buildTimelineDOM();
+updateHeader();
+loadAll();
+const wrap=document.getElementById('tl-wrap');
+const nowH=new Date().getHours();
+if(nowH>=START_H) wrap.scrollTop=Math.max(0,hourToTop(nowH)-80);
+setInterval(()=>renderTimeline(),60000);
 </script>
 </body>
 </html>

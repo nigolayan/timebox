@@ -4,110 +4,182 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="时间盒">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#6C63FF">
 <title>时间盒</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif; background: #fafaf8; color: #1a1a1a; overscroll-behavior: none; }
+html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif; overscroll-behavior: none; }
+
 :root {
-  --accent: #1a1a1a; --accent2: #555; --muted: #888;
-  --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
-  --surface: #fff; --bg: #fafaf8; --hour-h: 60px;
+  --p1: #6C63FF; --p2: #FF6584; --p3: #43C6AC;
+  --p4: #F7971E; --p5: #FF6B6B; --p6: #48CFAD;
+  --bg: #F0EFFF; --surface: #fff;
+  --text: #1a1a2e; --muted: #888;
+  --border: rgba(108,99,255,0.12);
+  --hour-h: 60px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
-@media (prefers-color-scheme: dark) {
-  :root { --accent: #f0f0ee; --accent2: #aaa; --muted: #666; --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2); --surface: #1c1c1e; --bg: #111110; }
-  body { background: var(--bg); color: var(--accent); }
+
+body { background: var(--bg); color: var(--text); }
+
+/* ── Header ── */
+.header {
+  background: linear-gradient(135deg, #6C63FF 0%, #9B59B6 100%);
+  padding: 14px 16px 12px;
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; box-shadow: 0 2px 12px rgba(108,99,255,0.3);
 }
+.header-left h1 { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+.header-left .date-str { font-size: 11px; color: rgba(255,255,255,0.75); margin-top: 1px; }
+.date-nav { display: flex; align-items: center; gap: 6px; }
+.nav-arrow { width: 30px; height: 30px; border: 1.5px solid rgba(255,255,255,0.4); border-radius: 50%; background: rgba(255,255,255,0.15); color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.hdr-btn { font-size: 12px; padding: 5px 14px; border: 1.5px solid rgba(255,255,255,0.5); border-radius: 20px; background: rgba(255,255,255,0.2); color: #fff; cursor: pointer; font-weight: 500; }
+.hdr-btn:active { background: rgba(255,255,255,0.35); }
+
+/* sync dot */
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.4); display: inline-block; margin-left: 6px; vertical-align: middle; }
+.sync-dot.ok { background: #4ade80; }
+.sync-dot.err { background: #f87171; }
+.sync-dot.loading { background: #fbbf24; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── Layout ── */
 .app { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
-.header { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 12px 16px 10px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; padding-top: calc(12px + env(safe-area-inset-top, 0px)); }
-.header-left h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.5px; }
-.header-left .date-str { font-size: 12px; color: var(--muted); margin-top: 1px; }
-.date-nav { display: flex; align-items: center; gap: 4px; }
-.nav-arrow { width: 28px; height: 28px; border: 0.5px solid var(--border); border-radius: 50%; background: none; color: var(--accent2); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.hdr-btn { font-size: 13px; padding: 5px 12px; border: 0.5px solid var(--border2); border-radius: 20px; background: none; color: var(--accent); cursor: pointer; }
-.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; display: inline-block; margin-left: 6px; vertical-align: middle; }
-.sync-dot.ok { background: #4CAF50; }
-.sync-dot.err { background: #e24b4a; }
-.sync-dot.loading { background: #FAC775; animation: pulse 1s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 .view { flex: 1; overflow: hidden; display: none; flex-direction: column; }
 .view.active { display: flex; }
-.tl-wrap { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; position: relative; }
-.tl-grid { display: grid; grid-template-columns: 44px 1fr; }
-.tl-label { height: var(--hour-h); display: flex; align-items: flex-start; justify-content: flex-end; padding-right: 8px; padding-top: 3px; font-size: 11px; color: var(--muted); }
+
+/* ── Timeline ── */
+.tl-wrap { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.tl-grid { display: grid; grid-template-columns: 46px 1fr; }
+.tl-label { height: var(--hour-h); display: flex; align-items: flex-start; justify-content: flex-end; padding-right: 8px; padding-top: 4px; font-size: 11px; color: var(--muted); font-weight: 500; }
 .tl-label:first-child { visibility: hidden; }
 .tl-slots { position: relative; }
-.tl-hour { height: var(--hour-h); border-top: 0.5px solid var(--border); position: relative; }
-.tl-hour::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; border-top: 0.5px dashed var(--border); opacity: 0.5; }
-.block { position: absolute; left: 4px; right: 4px; border-radius: 8px; overflow: hidden; touch-action: none; }
-.block-inner { padding: 5px 9px; height: 100%; display: flex; flex-direction: column; justify-content: center; }
-.block-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.block-time-tag { font-size: 10px; opacity: 0.75; margin-top: 1px; }
+.tl-hour { height: var(--hour-h); border-top: 1px solid rgba(108,99,255,0.1); position: relative; }
+.tl-hour::after { content:''; position:absolute; top:50%; left:0; right:0; border-top: 1px dashed rgba(108,99,255,0.07); }
+
+.block { position: absolute; left: 4px; right: 4px; border-radius: 10px; overflow: hidden; touch-action: none; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.block-inner { padding: 6px 10px; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+.block-name { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.block-time-tag { font-size: 10px; opacity: 0.8; margin-top: 1px; }
+
 .now-line { position: absolute; left: 0; right: 0; pointer-events: none; z-index: 5; }
-.now-line::before { content: ''; position: absolute; left: 0; right: 0; height: 1.5px; background: #e24b4a; top: -0.75px; }
-.now-dot { width: 8px; height: 8px; border-radius: 50%; background: #e24b4a; position: absolute; left: -4px; top: -4px; }
-.stats-bar { background: var(--surface); border-top: 0.5px solid var(--border); padding: 10px 16px; display: flex; gap: 20px; flex-shrink: 0; }
-.stat-item .val { font-size: 16px; font-weight: 500; }
-.stat-item .lbl { font-size: 10px; color: var(--muted); }
-.tasks-view { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; padding: 12px; }
-.add-card { background: var(--surface); border-radius: 12px; border: 0.5px solid var(--border); padding: 14px; margin-bottom: 12px; }
-.add-card input { width: 100%; font-size: 15px; border: none; background: none; color: var(--accent); outline: none; padding: 0 0 10px; border-bottom: 0.5px solid var(--border); }
-.add-card input::placeholder { color: var(--muted); }
-.dur-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
-.dur-btn { font-size: 12px; padding: 5px 12px; border: 0.5px solid var(--border); border-radius: 20px; background: none; color: var(--accent2); cursor: pointer; transition: all 0.15s; }
-.dur-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-.add-btn-full { width: 100%; padding: 10px; font-size: 14px; border: 0.5px solid var(--border2); border-radius: 8px; background: none; color: var(--accent); cursor: pointer; }
-.section-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 4px; margin-bottom: 6px; }
-.task-card { background: var(--surface); border-radius: 10px; border: 0.5px solid var(--border); padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; }
-.task-card.selected { border-color: var(--border2); background: var(--bg); }
-.task-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.task-info { flex: 1; }
-.task-info .name { font-size: 14px; }
-.task-info .dur { font-size: 12px; color: var(--muted); margin-top: 1px; }
-.task-del-btn { width: 28px; height: 28px; border: none; background: none; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.place-hint { background: #e6f1fb; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #185fa5; margin-bottom: 8px; display: none; }
+.now-line::before { content:''; position:absolute; left:0; right:0; height:2px; background:#FF6584; top:-1px; border-radius:1px; }
+.now-dot { width:10px; height:10px; border-radius:50%; background:#FF6584; position:absolute; left:-5px; top:-5px; box-shadow:0 0 0 3px rgba(255,101,132,0.25); }
+
+/* Stats bar */
+.stats-bar { background: var(--surface); border-top: 1px solid var(--border); padding: 10px 20px; display: flex; gap: 0; flex-shrink: 0; }
+.stat-item { flex: 1; text-align: center; }
+.stat-item .val { font-size: 18px; font-weight: 700; color: var(--p1); }
+.stat-item .lbl { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.stat-item:nth-child(2) .val { color: var(--p2); }
+.stat-item:nth-child(3) .val { color: var(--p3); }
+
+/* ── Tasks view ── */
+.tasks-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; padding: 14px; }
+.place-hint { background: linear-gradient(135deg, #667eea22, #764ba222); border: 1px solid #6C63FF33; border-radius: 12px; padding: 10px 14px; font-size: 13px; color: var(--p1); margin-bottom: 10px; display: none; font-weight: 500; }
 .place-hint.show { display: block; }
-.timer-view { align-items: center; justify-content: center; padding: 32px 24px; background: var(--bg); }
-.timer-circle-wrap { position: relative; width: 200px; height: 200px; margin-bottom: 28px; }
-.timer-svg { width: 200px; height: 200px; transform: rotate(-90deg); }
-.timer-track { fill: none; stroke: var(--border); stroke-width: 6; }
-.timer-prog { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+
+.add-card { background: var(--surface); border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(108,99,255,0.1); border: 1px solid var(--border); }
+.add-card-title { font-size: 13px; font-weight: 600; color: var(--p1); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.task-name-input { flex: 1; font-size: 15px; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.2s; }
+.task-name-input:focus { border-color: var(--p1); }
+.dur-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.dur-btn { font-size: 12px; padding: 5px 11px; border: 1.5px solid var(--border); border-radius: 20px; background: var(--bg); color: var(--muted); cursor: pointer; font-weight: 500; transition: all 0.15s; }
+.dur-btn.active { background: var(--p1); color: #fff; border-color: var(--p1); box-shadow: 0 2px 8px rgba(108,99,255,0.35); }
+
+.color-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
+.color-label { font-size: 11px; color: var(--muted); margin-right: 2px; }
+.color-swatch { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; }
+.color-swatch.active { border-color: var(--text); transform: scale(1.2); }
+
+.add-btn-full { width: 100%; padding: 11px; font-size: 14px; border: none; border-radius: 10px; background: linear-gradient(135deg, #6C63FF, #9B59B6); color: #fff; cursor: pointer; font-weight: 600; box-shadow: 0 3px 10px rgba(108,99,255,0.35); transition: opacity 0.15s; }
+.add-btn-full:active { opacity: 0.85; }
+
+.section-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; padding: 0 4px; margin-bottom: 8px; }
+
+.task-card { background: var(--surface); border-radius: 14px; padding: 13px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1.5px solid transparent; transition: all 0.15s; }
+.task-card.selected { border-color: var(--p1); box-shadow: 0 2px 12px rgba(108,99,255,0.2); }
+.task-color-bar { width: 4px; height: 36px; border-radius: 4px; flex-shrink: 0; }
+.task-info { flex: 1; min-width: 0; }
+.task-info .name { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.task-info .dur { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.task-actions { display: flex; gap: 4px; }
+.task-action-btn { width: 30px; height: 30px; border: none; background: var(--bg); border-radius: 8px; color: var(--muted); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.task-action-btn:hover { background: var(--p1); color: #fff; }
+.task-action-btn.del:hover { background: var(--p2); }
+
+/* ── Edit modal ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: flex-end; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; padding: 20px 20px calc(20px + var(--safe-bottom)); animation: slideUp 0.25s ease; }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+.modal-input { width: 100%; font-size: 15px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); outline: none; margin-bottom: 12px; }
+.modal-input:focus { border-color: var(--p1); }
+.modal-btns { display: flex; gap: 8px; }
+.modal-btn { flex: 1; padding: 12px; font-size: 14px; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; }
+.modal-btn.cancel { background: var(--bg); color: var(--muted); }
+.modal-btn.save { background: linear-gradient(135deg, #6C63FF, #9B59B6); color: #fff; box-shadow: 0 3px 10px rgba(108,99,255,0.3); }
+
+/* ── Timer ── */
+.timer-view { align-items: center; justify-content: center; padding: 28px 24px; background: linear-gradient(160deg, #F0EFFF 0%, #fff 100%); overflow-y: auto; }
+.timer-circle-wrap { position: relative; width: 210px; height: 210px; margin-bottom: 24px; }
+.timer-svg { width: 210px; height: 210px; transform: rotate(-90deg); }
+.timer-track { fill: none; stroke: rgba(108,99,255,0.12); stroke-width: 8; }
+.timer-prog { fill: none; stroke: url(#timerGrad); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
 .timer-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.timer-time { font-size: 42px; font-weight: 300; letter-spacing: -2px; font-variant-numeric: tabular-nums; }
-.timer-task-label { font-size: 13px; color: var(--muted); margin-top: 4px; max-width: 150px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.timer-controls { display: flex; gap: 12px; width: 100%; max-width: 280px; }
-.timer-btn { flex: 1; padding: 14px; font-size: 15px; border-radius: 12px; border: 0.5px solid var(--border2); background: none; color: var(--accent); cursor: pointer; }
-.timer-btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 500; }
-.task-picker { width: 100%; max-width: 280px; margin-top: 20px; display: flex; flex-direction: column; gap: 6px; }
-.picker-task { background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-.picker-task.selected { border-color: var(--border2); }
-.picker-dot { width: 8px; height: 8px; border-radius: 50%; }
-.picker-name { font-size: 14px; flex: 1; }
-.picker-dur { font-size: 12px; color: var(--muted); }
-.review-view { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; padding: 16px; }
-.review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
-.review-stat { background: var(--surface); border-radius: 10px; border: 0.5px solid var(--border); padding: 12px 10px; text-align: center; }
-.review-stat .val { font-size: 20px; font-weight: 500; }
-.review-stat .lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.timer-time { font-size: 44px; font-weight: 300; color: var(--text); letter-spacing: -2px; font-variant-numeric: tabular-nums; }
+.timer-task-label { font-size: 13px; color: var(--muted); margin-top: 4px; max-width: 160px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.timer-controls { display: flex; gap: 10px; width: 100%; max-width: 280px; margin-bottom: 20px; }
+.timer-btn { flex: 1; padding: 14px; font-size: 15px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; font-weight: 600; transition: all 0.15s; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.timer-btn.primary { background: linear-gradient(135deg, #6C63FF, #9B59B6); color: #fff; border: none; box-shadow: 0 4px 14px rgba(108,99,255,0.4); }
+.task-picker { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 6px; }
+.picker-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+.picker-task { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.picker-task.selected { border-color: var(--p1); background: #F0EFFF; box-shadow: 0 2px 10px rgba(108,99,255,0.15); }
+.picker-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.picker-name { font-size: 14px; font-weight: 500; flex: 1; }
+.picker-dur { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+/* ── Review ── */
+.review-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; padding: 16px; }
+.review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.review-stat { border-radius: 14px; padding: 14px 10px; text-align: center; }
+.review-stat:nth-child(1) { background: linear-gradient(135deg, #6C63FF22, #6C63FF11); }
+.review-stat:nth-child(2) { background: linear-gradient(135deg, #FF658422, #FF658411); }
+.review-stat:nth-child(3) { background: linear-gradient(135deg, #43C6AC22, #43C6AC11); }
+.review-stat .val { font-size: 22px; font-weight: 700; }
+.review-stat:nth-child(1) .val { color: var(--p1); }
+.review-stat:nth-child(2) .val { color: var(--p2); }
+.review-stat:nth-child(3) .val { color: var(--p3); }
+.review-stat .lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 500; }
 .review-empty { text-align: center; color: var(--muted); font-size: 14px; padding: 40px 0; }
-.review-row { background: var(--surface); border-radius: 10px; border: 0.5px solid var(--border); padding: 12px 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+.review-row { background: var(--surface); border-radius: 12px; padding: 12px 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
 .rev-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .rev-info { flex: 1; }
-.rev-name { font-size: 14px; }
+.rev-name { font-size: 14px; font-weight: 500; }
 .rev-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.rev-bar-wrap { width: 60px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.rev-bar-wrap { width: 60px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
 .rev-bar { height: 100%; border-radius: 2px; }
-.rev-dur { font-size: 12px; color: var(--muted); min-width: 36px; text-align: right; }
-.toast { position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--bg); padding: 8px 18px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all 0.25s; z-index: 200; white-space: nowrap; pointer-events: none; }
+.rev-dur { font-size: 12px; color: var(--muted); min-width: 36px; text-align: right; font-weight: 500; }
+
+/* ── Toast ── */
+.toast { position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: #fff; padding: 9px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all 0.25s; z-index: 300; white-space: nowrap; pointer-events: none; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.bottom-nav { display: flex; background: var(--surface); border-top: 0.5px solid var(--border); flex-shrink: 0; padding-bottom: var(--safe-bottom); }
-.bot-tab { flex: 1; padding: 10px 0 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; border: none; background: none; cursor: pointer; }
-.bot-tab .icon { font-size: 20px; }
-.bot-tab .label { font-size: 10px; color: var(--muted); }
-.bot-tab.active .label { color: var(--accent); font-weight: 500; }
+
+/* ── Bottom Nav ── */
+.bottom-nav { display: flex; background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; padding-bottom: var(--safe-bottom); box-shadow: 0 -2px 12px rgba(108,99,255,0.08); }
+.bot-tab { flex: 1; padding: 10px 0 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; border: none; background: none; cursor: pointer; position: relative; }
+.bot-tab .icon { font-size: 22px; transition: transform 0.2s; }
+.bot-tab .label { font-size: 10px; color: var(--muted); font-weight: 500; }
+.bot-tab.active .label { color: var(--p1); font-weight: 700; }
+.bot-tab.active .icon { transform: scale(1.15); }
+.bot-tab.active::after { content:''; position:absolute; bottom:0; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#6C63FF,#9B59B6); border-radius:2px; }
 </style>
 </head>
 <body>
@@ -124,32 +196,43 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
     </div>
   </div>
 
+  <!-- Timeline -->
   <div class="view active" id="view-timeline">
     <div class="tl-wrap" id="tl-wrap">
       <div class="tl-grid">
         <div id="tl-labels"></div>
-        <div id="tl-slots" style="position:relative"></div>
+        <div id="tl-slots" style="position:relative">
+          <svg width="0" height="0"><defs><linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#FF6584"/></linearGradient></defs></svg>
+        </div>
       </div>
     </div>
     <div class="stats-bar">
       <div class="stat-item"><div class="val" id="stat-blocks">0</div><div class="lbl">时间块</div></div>
       <div class="stat-item"><div class="val" id="stat-hours">0m</div><div class="lbl">已规划</div></div>
-      <div class="stat-item"><div class="val" id="stat-done">0/0</div><div class="lbl">完成</div></div>
+      <div class="stat-item"><div class="val" id="stat-done">0/0</div><div class="lbl">已完成</div></div>
     </div>
   </div>
 
+  <!-- Tasks -->
   <div class="view" id="view-tasks">
-    <div class="tasks-view">
-      <div class="place-hint" id="place-hint">👆 已选中任务，切到"今日"点击时间轴放置</div>
+    <div class="tasks-scroll">
+      <div class="place-hint" id="place-hint">👆 已选中，切到「今日」点击时间轴放置</div>
       <div class="add-card">
-        <input type="text" id="task-input" placeholder="新建任务…" maxlength="30">
+        <div class="add-card-title">新建任务</div>
+        <div class="input-row">
+          <input class="task-name-input" type="text" id="task-input" placeholder="任务名称…" maxlength="30">
+        </div>
         <div class="dur-row" id="dur-row">
           <span class="dur-btn" data-min="15">15分</span>
           <span class="dur-btn active" data-min="30">30分</span>
           <span class="dur-btn" data-min="45">45分</span>
           <span class="dur-btn" data-min="60">1小时</span>
-          <span class="dur-btn" data-min="90">1.5小时</span>
+          <span class="dur-btn" data-min="90">1.5h</span>
           <span class="dur-btn" data-min="120">2小时</span>
+        </div>
+        <div class="color-row">
+          <span class="color-label">颜色</span>
+          <div id="color-swatches"></div>
         </div>
         <button class="add-btn-full" onclick="addTask()">+ 添加任务</button>
       </div>
@@ -158,28 +241,34 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
     </div>
   </div>
 
+  <!-- Timer -->
   <div class="view" id="view-timer">
     <div class="timer-view">
       <div class="timer-circle-wrap">
-        <svg class="timer-svg" viewBox="0 0 200 200">
-          <circle class="timer-track" cx="100" cy="100" r="88"/>
-          <circle class="timer-prog" id="timer-prog" cx="100" cy="100" r="88" stroke-dasharray="553" stroke-dashoffset="0"/>
+        <svg class="timer-svg" viewBox="0 0 210 210">
+          <defs><linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#FF6584"/></linearGradient></defs>
+          <circle class="timer-track" cx="105" cy="105" r="92"/>
+          <circle class="timer-prog" id="timer-prog" cx="105" cy="105" r="92" stroke-dasharray="578" stroke-dashoffset="0"/>
         </svg>
         <div class="timer-center">
           <div class="timer-time" id="timer-display">—</div>
-          <div class="timer-task-label" id="timer-task-label">选择任务</div>
+          <div class="timer-task-label" id="timer-task-label">选择任务开始</div>
         </div>
       </div>
       <div class="timer-controls">
         <button class="timer-btn primary" id="timer-start-btn" onclick="toggleTimer()">开始</button>
         <button class="timer-btn" onclick="resetTimer()">重置</button>
       </div>
-      <div class="task-picker" id="task-picker"></div>
+      <div class="task-picker">
+        <div class="picker-label">选择任务</div>
+        <div id="task-picker"></div>
+      </div>
     </div>
   </div>
 
+  <!-- Review -->
   <div class="view" id="view-review">
-    <div class="review-view" id="review-content"></div>
+    <div class="review-scroll" id="review-content"></div>
   </div>
 
   <nav class="bottom-nav">
@@ -189,7 +278,33 @@ html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica
     <button class="bot-tab" onclick="switchTab('review',this)"><div class="icon">📊</div><div class="label">复盘</div></button>
   </nav>
 </div>
+
 <div class="toast" id="toast"></div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">编辑任务</div>
+    <input class="modal-input" type="text" id="edit-name" placeholder="任务名称" maxlength="30">
+    <div class="dur-row" id="edit-dur-row">
+      <span class="dur-btn" data-min="15">15分</span>
+      <span class="dur-btn active" data-min="30">30分</span>
+      <span class="dur-btn" data-min="45">45分</span>
+      <span class="dur-btn" data-min="60">1小时</span>
+      <span class="dur-btn" data-min="90">1.5h</span>
+      <span class="dur-btn" data-min="120">2小时</span>
+    </div>
+    <div class="color-row" style="margin-bottom:14px">
+      <span class="color-label">颜色</span>
+      <div id="edit-color-swatches"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeEditModal()">取消</button>
+      <button class="modal-btn save" onclick="saveEdit()">保存</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const SUPABASE_URL = 'https://pugkgopkiutyabjsgzvn.supabase.co';
@@ -199,44 +314,43 @@ let DEVICE_ID = localStorage.getItem('tb_device_id');
 if (!DEVICE_ID) { DEVICE_ID = 'dev_' + Math.random().toString(36).slice(2); localStorage.setItem('tb_device_id', DEVICE_ID); }
 
 const COLORS = [
-  {bg:'#1a1a1a',text:'#f5f5f3'},{bg:'#9FE1CB',text:'#085041'},
-  {bg:'#CECBF6',text:'#26215C'},{bg:'#FAC775',text:'#412402'},
-  {bg:'#F5C4B3',text:'#4A1B0C'},{bg:'#B5D4F4',text:'#042C53'},
-  {bg:'#F4C0D1',text:'#4B1528'},{bg:'#C0DD97',text:'#173404'},
+  {bg:'#6C63FF', text:'#fff'},
+  {bg:'#FF6584', text:'#fff'},
+  {bg:'#43C6AC', text:'#fff'},
+  {bg:'#F7971E', text:'#fff'},
+  {bg:'#FF6B6B', text:'#fff'},
+  {bg:'#48CFAD', text:'#fff'},
+  {bg:'#A18CD1', text:'#fff'},
+  {bg:'#FCC2D7', text:'#7d2046'},
 ];
 
 const START_H = 7, TOTAL_H = 17, HOUR_H = 60;
 let tasks = [], dayBlocks = {}, colorIdx = 0;
-let selectedDur = 30, activeTaskId = null;
+let selectedDur = 30, selectedColorIdx = 0, activeTaskId = null;
 let currentDate = new Date(); currentDate.setHours(0,0,0,0);
 let timerInterval = null, timerRemaining = 0, timerTotal = 0, timerRunning = false, timerPickedTaskId = null;
 let touchDragBlock = null, touchDragOffsetY = 0;
+let editingTaskId = null, editDur = 30, editColorIdx = 0;
 
+// ── Supabase ──
 async function sbFetch(path, method='GET', body=null) {
   const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
     method,
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': method === 'POST' ? 'return=representation' : ''
-    },
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': method==='POST'?'return=representation':'' },
     body: body ? JSON.stringify(body) : null
   });
   if (!res.ok) throw new Error(await res.text());
-  if (method === 'DELETE' || res.status === 204) return null;
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
+  if (method==='DELETE' || res.status===204) return null;
+  const text = await res.text(); return text ? JSON.parse(text) : null;
 }
-
-function setSyncDot(state) { document.getElementById('sync-dot').className = 'sync-dot ' + state; }
+function setSyncDot(s) { document.getElementById('sync-dot').className = 'sync-dot ' + s; }
 
 async function loadAll() {
   setSyncDot('loading');
   try {
     const [t, b] = await Promise.all([
-      sbFetch('tasks?device_id=eq.' + DEVICE_ID + '&order=id.asc'),
-      sbFetch('blocks?device_id=eq.' + DEVICE_ID + '&order=id.asc')
+      sbFetch('tasks?device_id=eq.'+DEVICE_ID+'&order=id.asc'),
+      sbFetch('blocks?device_id=eq.'+DEVICE_ID+'&order=id.asc')
     ]);
     tasks = (t||[]).map(r => ({id:r.id, name:r.name, duration:r.duration, color:{bg:r.color_bg, text:r.color_text}}));
     colorIdx = tasks.length % COLORS.length;
@@ -245,14 +359,14 @@ async function loadAll() {
       if (!dayBlocks[r.day_key]) dayBlocks[r.day_key] = [];
       dayBlocks[r.day_key].push({id:r.id, name:r.name, duration:r.duration, color:{bg:r.color_bg, text:r.color_text}, taskId:r.task_id, day_key:r.day_key, h:r.hour, m:r.minute, done:r.done});
     });
-    setSyncDot('ok');
-    renderTasks(); renderTimeline(); updateStats(); renderPicker();
+    setSyncDot('ok'); renderTasks(); renderTimeline(); updateStats(); renderPicker();
   } catch(e) { setSyncDot('err'); showToast('同步失败，请检查网络'); }
 }
 
+// ── Helpers ──
 function pad(n) { return String(n).padStart(2,'0'); }
 function dayKey(d) { return d.toISOString().slice(0,10); }
-function hourToTop(h, m=0) { return (h - START_H + m/60) * HOUR_H; }
+function hourToTop(h, m=0) { return (h-START_H+m/60)*HOUR_H; }
 function topToTime(px) {
   const mins = Math.round((px/HOUR_H)*60/15)*15;
   const h = Math.floor(mins/60)+START_H, m = mins%60;
@@ -260,11 +374,28 @@ function topToTime(px) {
 }
 function fmtDur(min) { return min>=60?(min%60===0?min/60+'h':(min/60).toFixed(1)+'h'):min+'m'; }
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2000);
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
 }
 
+// ── Color swatches ──
+function buildSwatches(containerId, activeIdx, onChange) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  el.style.display = 'flex'; el.style.gap = '7px';
+  COLORS.forEach((c, i) => {
+    const s = document.createElement('div');
+    s.className = 'color-swatch' + (i===activeIdx?' active':'');
+    s.style.background = c.bg;
+    s.addEventListener('click', () => {
+      el.querySelectorAll('.color-swatch').forEach(x=>x.classList.remove('active'));
+      s.classList.add('active'); onChange(i);
+    });
+    el.appendChild(s);
+  });
+}
+
+// ── Date ──
 function updateHeader() {
   const now=new Date(); now.setHours(0,0,0,0);
   const diff=Math.round((currentDate-now)/86400000);
@@ -275,40 +406,38 @@ function updateHeader() {
 function changeDay(d) { currentDate=new Date(currentDate.getTime()+d*86400000); updateHeader(); renderTimeline(); updateStats(); }
 function goToday() { currentDate=new Date(); currentDate.setHours(0,0,0,0); updateHeader(); renderTimeline(); updateStats(); }
 
+// ── Tab ──
 function switchTab(name, btn) {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.bot-tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('view-'+name).classList.add('active');
-  btn.classList.add('active');
+  document.getElementById('view-'+name).classList.add('active'); btn.classList.add('active');
   if(name==='review') renderReview();
   if(name==='timer') renderPicker();
   if(name==='tasks') updatePlaceHint();
 }
 
+// ── Timeline ──
 function buildTimelineDOM() {
-  const labels=document.getElementById('tl-labels');
-  const slots=document.getElementById('tl-slots');
-  labels.innerHTML='';
-  slots.querySelectorAll('.tl-hour').forEach(e=>e.remove());
+  const labels=document.getElementById('tl-labels'), slots=document.getElementById('tl-slots');
+  labels.innerHTML=''; slots.querySelectorAll('.tl-hour').forEach(e=>e.remove());
   for(let h=START_H; h<=START_H+TOTAL_H; h++) {
     const lbl=document.createElement('div'); lbl.className='tl-label'; lbl.textContent=h<24?`${h}:00`:'';
     labels.appendChild(lbl);
     const line=document.createElement('div'); line.className='tl-hour'; line.dataset.hour=h;
-    slots.insertBefore(line, slots.firstChild);
+    slots.insertBefore(line, slots.querySelector('svg') || slots.firstChild);
   }
   slots.style.height=(TOTAL_H+1)*HOUR_H+'px';
   slots.addEventListener('click', e=>{
     if(e.target.closest('.block')) return;
-    if(!activeTaskId) { showToast('请先在"任务"中选择任务'); return; }
-    const task=tasks.find(t=>t.id===activeTaskId);
-    if(!task) return;
+    if(!activeTaskId){showToast('请先在「任务」中选择一个任务');return;}
+    const task=tasks.find(t=>t.id===activeTaskId); if(!task) return;
     const rect=slots.getBoundingClientRect();
     const {h,m}=topToTime(Math.max(0,e.clientY-rect.top));
     placeBlock(task,h,m);
   });
-  slots.addEventListener('touchstart', onBlockTouchStart, {passive:false});
-  slots.addEventListener('touchmove', onBlockTouchMove, {passive:false});
-  slots.addEventListener('touchend', onBlockTouchEnd);
+  slots.addEventListener('touchstart', onTouchStart, {passive:false});
+  slots.addEventListener('touchmove', onTouchMove, {passive:false});
+  slots.addEventListener('touchend', onTouchEnd);
 }
 
 function renderTimeline() {
@@ -327,22 +456,20 @@ function renderTimeline() {
     slots.appendChild(el);
   });
   const now=new Date();
-  if(dayKey(currentDate)===dayKey(now)) {
+  if(dayKey(currentDate)===dayKey(now)){
     const nl=document.createElement('div'); nl.className='now-line'; nl.style.top=hourToTop(now.getHours(),now.getMinutes())+'px';
     nl.innerHTML='<div class="now-dot"></div>'; slots.appendChild(nl);
   }
 }
 
 async function placeBlock(task,h,m) {
-  const key=dayKey(currentDate);
-  setSyncDot('loading');
+  const key=dayKey(currentDate); setSyncDot('loading');
   try {
     const res=await sbFetch('blocks','POST',{device_id:DEVICE_ID,task_id:task.id,name:task.name,duration:task.duration,color_bg:task.color.bg,color_text:task.color.text,day_key:key,hour:h,minute:m,done:false});
-    const saved=res[0];
     if(!dayBlocks[key]) dayBlocks[key]=[];
-    dayBlocks[key].push({id:saved.id,name:task.name,duration:task.duration,color:task.color,taskId:task.id,day_key:key,h,m,done:false});
-    setSyncDot('ok'); renderTimeline(); updateStats(); showToast('已放置 '+pad(h)+':'+pad(m));
-  } catch(e) { setSyncDot('err'); showToast('放置失败'); }
+    dayBlocks[key].push({id:res[0].id,name:task.name,duration:task.duration,color:task.color,taskId:task.id,day_key:key,h,m,done:false});
+    setSyncDot('ok'); renderTimeline(); updateStats(); showToast('✅ 已放置 '+pad(h)+':'+pad(m));
+  } catch(e){setSyncDot('err');showToast('放置失败');}
 }
 
 async function deleteBlock(block) {
@@ -352,45 +479,44 @@ async function deleteBlock(block) {
     const key=dayKey(currentDate);
     dayBlocks[key]=(dayBlocks[key]||[]).filter(b=>b.id!==block.id);
     setSyncDot('ok'); renderTimeline(); updateStats();
-  } catch(e) { setSyncDot('err'); showToast('删除失败'); }
+  } catch(e){setSyncDot('err');showToast('删除失败');}
 }
 
-function onBlockTouchStart(e) {
+function onTouchStart(e) {
   const block=e.target.closest('.block'); if(!block) return;
   touchDragBlock=parseInt(block.dataset.id);
   touchDragOffsetY=e.touches[0].clientY-block.getBoundingClientRect().top;
 }
-function onBlockTouchMove(e) {
+function onTouchMove(e) {
   if(!touchDragBlock) return; e.preventDefault();
   const slots=document.getElementById('tl-slots');
   const rect=slots.getBoundingClientRect();
   const {h,m}=topToTime(Math.max(0,e.touches[0].clientY-rect.top-touchDragOffsetY));
   const key=dayKey(currentDate);
   const b=(dayBlocks[key]||[]).find(b=>b.id===touchDragBlock);
-  if(b) { b.h=h; b.m=m; renderTimeline(); }
+  if(b){b.h=h;b.m=m;renderTimeline();}
 }
-async function onBlockTouchEnd() {
+async function onTouchEnd() {
   if(!touchDragBlock) return;
   const key=dayKey(currentDate);
   const b=(dayBlocks[key]||[]).find(b=>b.id===touchDragBlock);
-  if(b) {
-    setSyncDot('loading');
-    try { await sbFetch('blocks?id=eq.'+b.id,'PATCH',{hour:b.h,minute:b.m}); setSyncDot('ok'); }
-    catch(e) { setSyncDot('err'); }
-  }
+  if(b){setSyncDot('loading');try{await sbFetch('blocks?id=eq.'+b.id,'PATCH',{hour:b.h,minute:b.m});setSyncDot('ok');}catch(e){setSyncDot('err');}}
   touchDragBlock=null;
 }
 
+// ── Tasks ──
 async function addTask() {
   const input=document.getElementById('task-input');
-  const name=input.value.trim(); if(!name) { input.focus(); return; }
-  const color=COLORS[colorIdx++%COLORS.length];
+  const name=input.value.trim(); if(!name){input.focus();return;}
+  const color=COLORS[selectedColorIdx];
   setSyncDot('loading');
   try {
     const res=await sbFetch('tasks','POST',{device_id:DEVICE_ID,name,duration:selectedDur,color_bg:color.bg,color_text:color.text});
     tasks.push({id:res[0].id,name,duration:selectedDur,color});
-    input.value=''; setSyncDot('ok'); renderTasks(); renderPicker();
-  } catch(e) { setSyncDot('err'); showToast('添加失败'); }
+    input.value=''; colorIdx=(colorIdx+1)%COLORS.length; selectedColorIdx=colorIdx;
+    buildSwatches('color-swatches',selectedColorIdx,i=>{selectedColorIdx=i;});
+    setSyncDot('ok'); renderTasks(); renderPicker(); showToast('✅ 任务已添加');
+  } catch(e){setSyncDot('err');showToast('添加失败');}
 }
 
 async function deleteTask(id) {
@@ -400,33 +526,73 @@ async function deleteTask(id) {
     if(activeTaskId===id) activeTaskId=null;
     tasks=tasks.filter(t=>t.id!==id);
     setSyncDot('ok'); renderTasks(); renderPicker();
-  } catch(e) { setSyncDot('err'); showToast('删除失败'); }
+  } catch(e){setSyncDot('err');showToast('删除失败');}
 }
 
 function selectTask(id) { activeTaskId=activeTaskId===id?null:id; renderTasks(); updatePlaceHint(); }
 function updatePlaceHint() { document.getElementById('place-hint').classList.toggle('show',!!activeTaskId); }
+
 function renderTasks() {
   const list=document.getElementById('task-list');
-  if(!tasks.length) { list.innerHTML='<div style="text-align:center;color:var(--muted);font-size:14px;padding:24px 0">暂无任务，添加一个吧</div>'; return; }
+  if(!tasks.length){list.innerHTML='<div style="text-align:center;color:var(--muted);font-size:14px;padding:32px 0">暂无任务，添加一个吧 ✨</div>';return;}
   list.innerHTML='';
   tasks.forEach(task=>{
     const el=document.createElement('div');
     el.className='task-card'+(activeTaskId===task.id?' selected':'');
-    el.innerHTML=`<div class="task-dot" style="background:${task.color.bg};border:1.5px solid ${task.color.text}44"></div>
+    el.innerHTML=`<div class="task-color-bar" style="background:${task.color.bg}"></div>
       <div class="task-info"><div class="name">${task.name}</div><div class="dur">${fmtDur(task.duration)}</div></div>
-      <button class="task-del-btn" onclick="deleteTask(${task.id});event.stopPropagation()">×</button>`;
+      <div class="task-actions">
+        <button class="task-action-btn" onclick="openEditModal(${task.id});event.stopPropagation()" title="编辑">✏️</button>
+        <button class="task-action-btn del" onclick="deleteTask(${task.id});event.stopPropagation()" title="删除">🗑</button>
+      </div>`;
     el.addEventListener('click',()=>selectTask(task.id));
     list.appendChild(el);
   });
 }
 
+// ── Edit Modal ──
+function openEditModal(id) {
+  const task=tasks.find(t=>t.id===id); if(!task) return;
+  editingTaskId=id; editDur=task.duration;
+  editColorIdx=COLORS.findIndex(c=>c.bg===task.color.bg); if(editColorIdx<0) editColorIdx=0;
+  document.getElementById('edit-name').value=task.name;
+  // set dur buttons
+  document.querySelectorAll('#edit-dur-row .dur-btn').forEach(b=>{
+    b.classList.toggle('active', parseInt(b.dataset.min)===editDur);
+  });
+  buildSwatches('edit-color-swatches', editColorIdx, i=>{editColorIdx=i;});
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeEditModal() { document.getElementById('edit-modal').classList.remove('open'); editingTaskId=null; }
+
+async function saveEdit() {
+  const name=document.getElementById('edit-name').value.trim(); if(!name) return;
+  const color=COLORS[editColorIdx];
+  setSyncDot('loading');
+  try {
+    await sbFetch('tasks?id=eq.'+editingTaskId,'PATCH',{name,duration:editDur,color_bg:color.bg,color_text:color.text});
+    const task=tasks.find(t=>t.id===editingTaskId);
+    task.name=name; task.duration=editDur; task.color=color;
+    setSyncDot('ok'); closeEditModal(); renderTasks(); renderPicker(); showToast('✅ 已保存');
+  } catch(e){setSyncDot('err');showToast('保存失败');}
+}
+
+document.getElementById('edit-modal').addEventListener('click', e=>{ if(e.target===document.getElementById('edit-modal')) closeEditModal(); });
+document.getElementById('edit-dur-row').addEventListener('click', e=>{
+  if(e.target.dataset.min){
+    editDur=parseInt(e.target.dataset.min);
+    document.querySelectorAll('#edit-dur-row .dur-btn').forEach(b=>b.classList.toggle('active',b.dataset.min==e.target.dataset.min));
+  }
+});
+
+// ── Timer ──
 function renderPicker() {
-  const picker=document.getElementById('task-picker');
-  picker.innerHTML=tasks.length?'<div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">选择任务</div>':'';
+  const picker=document.getElementById('task-picker'); picker.innerHTML='';
+  if(!tasks.length){picker.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px 0">先去添加任务吧</div>';return;}
   tasks.forEach(task=>{
     const el=document.createElement('div');
     el.className='picker-task'+(timerPickedTaskId===task.id?' selected':'');
-    el.innerHTML=`<div class="picker-dot" style="background:${task.color.bg};border:1.5px solid ${task.color.text}44"></div>
+    el.innerHTML=`<div class="picker-dot" style="background:${task.color.bg}"></div>
       <div class="picker-name">${task.name}</div><div class="picker-dur">${fmtDur(task.duration)}</div>`;
     el.addEventListener('click',()=>loadTimer(task));
     picker.appendChild(el);
@@ -438,32 +604,34 @@ function loadTimer(task) {
   timerRemaining=task.duration*60; timerTotal=task.duration*60;
   document.getElementById('timer-task-label').textContent=task.name;
   document.getElementById('timer-start-btn').textContent='开始';
+  document.getElementById('timer-prog').style.stroke=task.color.bg;
   updateTimerDisplay(); renderPicker();
 }
 function toggleTimer() {
   if(timerTotal===0){showToast('请先选择任务');return;}
   timerRunning=!timerRunning;
-  if(timerRunning) {
+  if(timerRunning){
     document.getElementById('timer-start-btn').textContent='暂停';
     timerInterval=setInterval(()=>{
       timerRemaining=Math.max(0,timerRemaining-1); updateTimerDisplay();
       if(timerRemaining===0){clearInterval(timerInterval);timerInterval=null;timerRunning=false;document.getElementById('timer-start-btn').textContent='完成 ✓';showToast('⏰ 时间到！');}
     },1000);
-  } else { clearInterval(timerInterval);timerInterval=null;document.getElementById('timer-start-btn').textContent='继续'; }
+  } else {clearInterval(timerInterval);timerInterval=null;document.getElementById('timer-start-btn').textContent='继续';}
 }
 function resetTimer() {
   clearInterval(timerInterval);timerInterval=null;timerRunning=false;timerRemaining=timerTotal;
   document.getElementById('timer-start-btn').textContent='开始';
   const task=tasks.find(t=>t.id===timerPickedTaskId);
-  document.getElementById('timer-task-label').textContent=task?task.name:'选择任务';
+  document.getElementById('timer-task-label').textContent=task?task.name:'选择任务开始';
   updateTimerDisplay();
 }
 function updateTimerDisplay() {
   const m=Math.floor(timerRemaining/60),s=timerRemaining%60;
   document.getElementById('timer-display').textContent=timerTotal>0?pad(m)+':'+pad(s):'—';
-  document.getElementById('timer-prog').style.strokeDashoffset=2*Math.PI*88*(timerTotal>0?timerRemaining/timerTotal:1);
+  document.getElementById('timer-prog').style.strokeDashoffset=2*Math.PI*92*(timerTotal>0?timerRemaining/timerTotal:1);
 }
 
+// ── Stats ──
 function updateStats() {
   const key=dayKey(currentDate),blocks=dayBlocks[key]||[];
   const total=blocks.reduce((s,b)=>s+b.duration,0),done=blocks.filter(b=>b.done).length;
@@ -472,16 +640,17 @@ function updateStats() {
   document.getElementById('stat-done').textContent=done+'/'+blocks.length;
 }
 
+// ── Review ──
 function renderReview() {
   const key=dayKey(currentDate);
   const blocks=(dayBlocks[key]||[]).slice().sort((a,b)=>a.h*60+a.m-(b.h*60+b.m));
   const total=blocks.reduce((s,b)=>s+b.duration,0),done=blocks.filter(b=>b.done).length;
   const content=document.getElementById('review-content');
-  content.innerHTML=`<div class="review-grid">
+  content.innerHTML=`<div style="padding:16px 16px 8px"><div class="review-grid">
     <div class="review-stat"><div class="val">${blocks.length}</div><div class="lbl">时间块</div></div>
     <div class="review-stat"><div class="val">${fmtDur(total)}</div><div class="lbl">规划时长</div></div>
     <div class="review-stat"><div class="val">${done}/${blocks.length}</div><div class="lbl">已完成</div></div>
-  </div>${blocks.length===0?'<div class="review-empty">今天还没有时间块</div>':''}`;
+  </div></div><div style="padding:0 16px 16px">${blocks.length===0?'<div class="review-empty">今天还没有时间块 📭</div>':''}`;
   blocks.forEach(block=>{
     const pct=total>0?Math.round(block.duration/total*100):0;
     const row=document.createElement('div'); row.className='review-row';
@@ -489,14 +658,21 @@ function renderReview() {
       <div class="rev-info"><div class="rev-name">${block.done?'✓ ':''}${block.name}</div><div class="rev-meta">${pad(block.h)}:${pad(block.m)}</div></div>
       <div class="rev-bar-wrap"><div class="rev-bar" style="width:${pct}%;background:${block.color.bg}"></div></div>
       <div class="rev-dur">${fmtDur(block.duration)}</div>`;
-    content.appendChild(row);
+    content.querySelector('div:last-child').appendChild(row);
   });
+  if(blocks.length>0) content.querySelector('div:last-child').innerHTML += '</div>';
 }
 
-document.getElementById('dur-row').addEventListener('click',e=>{
-  if(e.target.dataset.min){selectedDur=parseInt(e.target.dataset.min);document.querySelectorAll('.dur-btn').forEach(b=>b.classList.toggle('active',b.dataset.min==e.target.dataset.min));}
+// ── Init ──
+document.getElementById('dur-row').addEventListener('click', e=>{
+  if(e.target.dataset.min){
+    selectedDur=parseInt(e.target.dataset.min);
+    document.querySelectorAll('#dur-row .dur-btn').forEach(b=>b.classList.toggle('active',b.dataset.min==e.target.dataset.min));
+  }
 });
-document.getElementById('task-input').addEventListener('keydown',e=>{if(e.key==='Enter')addTask();});
+document.getElementById('task-input').addEventListener('keydown', e=>{if(e.key==='Enter')addTask();});
+
+buildSwatches('color-swatches', selectedColorIdx, i=>{selectedColorIdx=i;});
 buildTimelineDOM();
 updateHeader();
 loadAll();
